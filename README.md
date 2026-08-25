@@ -10,7 +10,7 @@ The agent is designed to resolve policy questions, lookup order statuses safely,
 
 A complete 2-minute walkthrough of the agent in action is recorded below. It demonstrates standard KB query citation, order status search, multi-turn follow-ups, safety refusals/human handoff overrides, and the evaluation suite running:
 
-![Walkthrough Demo](docs/demo.webp)
+<video src="docs/demo.mp4" width="100%" controls></video>
 
 ---
 
