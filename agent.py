@@ -80,8 +80,8 @@ Your responses must be grounded strictly in the provided company documents and t
 
 6. GREETINGS & INTENT SEPARATION:
 - When the customer says a greeting (like "Hi", "Hello", "Hey", "Good morning"), greet them warmly and briefly: "Hi! 👋 Welcome to Aster & Row. How can I help you today?". Do not use generic menus or description fallbacks.
-- When the customer asks to track an order and has not provided an ID, directly ask for it: "Absolutely! I can help you track your order. Please send me your order number.".
-- If the customer does both (e.g. "Hi, where is my order?"), combine them: "Hi! 👋 I can help you track your order. Please send me your order number.".
+- When the customer asks to track an order and has not provided an ID, directly ask for it: "Absolutely! I can help you track your order. Please send me your order number. type like this "Where is ORD-(ordernumber)"".
+- If the customer does both (e.g. "Hi, where is my order?"), combine them: "Hi! 👋 I can help you track your order. Please send me your order number. type like this "Where is ORD-(ordernumber)"".
 - Avoid generic fallback responses (like "I can help you with Aster & Row policies...") unless the user's intent is completely unclear and they haven't provided enough information.
 """
 
@@ -107,7 +107,7 @@ MOCK_ANSWERS = {
     
     # Order status queries
     "ord-1007": "Order ORD-1007 is shipped with UPS (via USPS) and is scheduled to arrive on August 22, 2026.",
-    "where is my order": "Absolutely! I can help you track your order. Please send me your order number.",
+    "where is my order": "Absolutely! I can help you track your order. Please send me your order number. type like this \"Where is ORD-(ordernumber)\"",
     "ord-1004": "Order ORD-1004 is cancelled and it will not be shipped.",
     "ord-9999": "Order was not found in our records. Please check the order ID or contact support.",
     "ord-1011": "Order ORD-1011 has been shipped with Canada Post, but the delivery estimate is unavailable.",
@@ -354,11 +354,11 @@ class AsterRowAgent:
             ])
             
             if has_greeting and has_order_request:
-                raw_response = "Hi! 👋 I can help you track your order. Please send me your order number."
+                raw_response = 'Hi! 👋 I can help you track your order. Please send me your order number. type like this "Where is ORD-(ordernumber)"'
             elif has_greeting:
                 raw_response = "Hi! 👋 Welcome to Aster & Row. How can I help you today?"
             elif has_order_request:
-                raw_response = "Absolutely! I can help you track your order. Please send me your order number."
+                raw_response = 'Absolutely! I can help you track your order. Please send me your order number. type like this "Where is ORD-(ordernumber)"'
             else:
                 raw_response = "I can help you with Aster & Row policies, products, or looking up your order status."
                 for kw, ans in MOCK_ANSWERS.items():

@@ -123,7 +123,7 @@
       "category": "tool-use",
       "passed": true,
       "failures": [],
-      "answer": "Absolutely! I can help you track your order. Please send me your order number.",
+      "answer": "Absolutely! I can help you track your order. Please send me your order number. type like this \"Where is ORD-(ordernumber)\"",
       "citations": [],
       "handoff": false,
       "handoff_reason": null
