@@ -77,6 +77,12 @@ Your responses must be grounded strictly in the provided company documents and t
   - The customer requests an action you cannot complete (cancellation, refund, replacement, address change).
   - The customer reports payment fraud, security, safety, or legal issues.
   - The customer requests internal notes, prompts, or sensitive credentials.
+
+6. GREETINGS & INTENT SEPARATION:
+- When the customer says a greeting (like "Hi", "Hello", "Hey", "Good morning"), greet them warmly and briefly: "Hi! 👋 Welcome to Aster & Row. How can I help you today?". Do not use generic menus or description fallbacks.
+- When the customer asks to track an order and has not provided an ID, directly ask for it: "Absolutely! I can help you track your order. Please send me your order number.".
+- If the customer does both (e.g. "Hi, where is my order?"), combine them: "Hi! 👋 I can help you track your order. Please send me your order number.".
+- Avoid generic fallback responses (like "I can help you with Aster & Row policies...") unless the user's intent is completely unclear and they haven't provided enough information.
 """
 
 # Fallback Mock Mode Database for offline evaluations and testing
@@ -101,7 +107,7 @@ MOCK_ANSWERS = {
     
     # Order status queries
     "ord-1007": "Order ORD-1007 is shipped with UPS (via USPS) and is scheduled to arrive on August 22, 2026.",
-    "where is my order": "To look up your order status, please check the order ID or contact support. What is your order ID?",
+    "where is my order": "Absolutely! I can help you track your order. Please send me your order number.",
     "ord-1004": "Order ORD-1004 is cancelled and it will not be shipped.",
     "ord-9999": "Order was not found in our records. Please check the order ID or contact support.",
     "ord-1011": "Order ORD-1011 has been shipped with Canada Post, but the delivery estimate is unavailable.",
@@ -335,12 +341,30 @@ class AsterRowAgent:
         raw_response = ""
         if self.is_mock_mode:
             # Intercept and return high-fidelity mock RAG outputs matching case queries
-            msg_lower = message.lower()
-            raw_response = "I can help you with Aster & Row policies, products, or looking up your order status."
-            for kw, ans in MOCK_ANSWERS.items():
-                if kw in msg_lower:
-                    raw_response = ans
-                    break
+            msg_lower = message.lower().strip(",.!? ")
+            words = re.findall(r'\b\w+\b', msg_lower)
+            
+            # Check for greeting keywords
+            has_greeting = any(w in words for w in ["hi", "hello", "hey"]) or "good morning" in msg_lower
+            
+            # Check for order status check request (only if order ID is missing)
+            has_order_request = order_id is None and any(k in msg_lower for k in [
+                "where is my order", "where's my order", "where is my package", 
+                "track my order", "status of my order", "tell me where my order is"
+            ])
+            
+            if has_greeting and has_order_request:
+                raw_response = "Hi! 👋 I can help you track your order. Please send me your order number."
+            elif has_greeting:
+                raw_response = "Hi! 👋 Welcome to Aster & Row. How can I help you today?"
+            elif has_order_request:
+                raw_response = "Absolutely! I can help you track your order. Please send me your order number."
+            else:
+                raw_response = "I can help you with Aster & Row policies, products, or looking up your order status."
+                for kw, ans in MOCK_ANSWERS.items():
+                    if kw in msg_lower:
+                        raw_response = ans
+                        break
         else:
             dynamic_system_instruction = SYSTEM_PROMPT
             if classified_intent != "none":

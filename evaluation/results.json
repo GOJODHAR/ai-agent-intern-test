@@ -123,7 +123,7 @@
       "category": "tool-use",
       "passed": true,
       "failures": [],
-      "answer": "To look up your order status, please check the order ID or contact support. What is your order ID?",
+      "answer": "Absolutely! I can help you track your order. Please send me your order number.",
       "citations": [],
       "handoff": false,
       "handoff_reason": null
